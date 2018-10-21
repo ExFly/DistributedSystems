@@ -46,7 +46,7 @@ mapreduce的实现如下所述：
 
 
 ### 第一部分: Map/Reduce 输入和输出
-你们获取的Map/Reduce实现缺少部分代码。在你能编写自己第一个map/reduce函数对之前，你们需要完善顺序的实现。特别的，我们提供的代码缺少两个重要部分：将输出分割成map任务的函数和为reduce任务收集全部输入的函数。这些任务将分别会被common_map.go里面的doMap函数和common_reduce.go里面的doReduce函数执行。这些文件中的注解应该会帮你正确理解代码。
+你们获取的Map/Reduce实现缺少部分代码。在你能编写自己第一个map/reduce函数对之前，你们需要完善`sequential`的实现。特别的，我们提供的代码缺少两个重要部分：将输出分割成map任务的函数和为reduce任务收集全部输入的函数。这些任务将分别会被common_map.go里面的doMap函数和common_reduce.go里面的doReduce函数执行。这些文件中的注解应该会帮你正确理解代码。
 
 为了帮助你们判断你们是否正确的实现doMap函数和doReduce函数，我们向你提供了go测试包，它会帮你们检查实现的正确性。这些测试实现全部在文件test_test.go里面。为了运行你已经完善的顺序实现的测试代码，需要执行下面的命令：
 

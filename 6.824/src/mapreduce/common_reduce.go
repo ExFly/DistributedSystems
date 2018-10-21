@@ -1,5 +1,13 @@
 package mapreduce
 
+import (
+	"bufio"
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+)
+
 func doReduce(
 	jobName string, // the name of the whole MapReduce job
 	reduceTask int, // which reduce task this is
@@ -44,4 +52,32 @@ func doReduce(
 	//
 	// Your code here (Part I).
 	//
+	resultMap := make(map[string][]string)
+	for m := 0; m < nMap; m++ {
+		inFile := reduceName(jobName, m, reduceTask)
+		infile, err := os.Open(inFile)
+		if err != nil {
+			fmt.Printf("doReduce:%v", err)
+		}
+		defer infile.Close()
+		br := bufio.NewReader(infile)
+		dec := json.NewDecoder(br)
+		var kv KeyValue
+		for {
+			err = dec.Decode(&kv)
+			if err != nil {
+				break
+			}
+			resultMap[kv.Key] = append(resultMap[kv.Key], kv.Value)
+		}
+
+		rf, err := os.OpenFile(outFile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0660)
+		if err != nil {
+			log.Println(err)
+		}
+		enc := json.NewEncoder(rf)
+		for k, v := range resultMap {
+			enc.Encode(KeyValue{k, reduceF(k, v)})
+		}
+	}
 }

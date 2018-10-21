@@ -19,6 +19,10 @@ const (
 	nReduce = 10
 )
 
+func init() {
+	log.SetFlags(log.Lshortfile | log.LstdFlags)
+}
+
 // Create input file with N numbers
 // Check if we have N numbers in output file
 
