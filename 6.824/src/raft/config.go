@@ -7,71 +7,86 @@ package raft
 // so, while you can modify this code to help you debug, please
 // test with the original before submitting.
 //
-// 我们使用最初的config.go文件分级测试你们的代码,所以你们可与修改这边的代码帮助你们调试，
-// 请在提交之前测试。
 
 import "labrpc"
 import "log"
 import "sync"
 import "testing"
 import "runtime"
+import "math/rand"
 import crand "crypto/rand"
+import "math/big"
 import "encoding/base64"
-import "sync/atomic"
 import "time"
 import "fmt"
 
-// 产生随机字符串
 func randstring(n int) string {
-	b := make([]byte, 2*n)  // 为什么申请了两倍空间？
+	b := make([]byte, 2*n)
 	crand.Read(b)
 	s := base64.URLEncoding.EncodeToString(b)
 	return s[0:n]
 }
 
-// 构建测试环境对象
+func makeSeed() int64 {
+	max := big.NewInt(int64(1) << 62)
+	bigx, _ := crand.Int(crand.Reader, max)
+	x := bigx.Int64()
+	return x
+}
+
 type config struct {
 	mu        sync.Mutex
 	t         *testing.T
-	net       *labrpc.Network 	// 模拟网络
-	n         int			// 服务器的数量
-	done      int32 		// tell internal threads to die
-	// 下面slice的长度都为n
-	rafts     []*Raft		// 管理主机实例,数量为n
-	applyErr  []string 		// from apply channel readers
-	connected []bool   		// whether each server is on the net
-	saved     []*Persister		// 数据持久化：Raft状态值和快照数据
-	endnames  [][]string   		// the port file names each sends to
-	logs      []map[int]int 	// copy of each server's committed entries,每台服务器的日志副本
+	net       *labrpc.Network
+	n         int
+	rafts     []*Raft
+	applyErr  []string // from apply channel readers
+	connected []bool   // whether each server is on the net
+	saved     []*Persister
+	endnames  [][]string    // the port file names each sends to
+	logs      []map[int]int // copy of each server's committed entries
+	start     time.Time     // time at which make_config() was called
+	// begin()/end() statistics
+	t0        time.Time // time at which test_test.go called cfg.begin()
+	rpcs0     int       // rpcTotal() at start of test
+	cmds0     int       // number of agreements
+	maxIndex  int
+	maxIndex0 int
 }
 
-// 构建测试环境
+var ncpu_once sync.Once
+
 func make_config(t *testing.T, n int, unreliable bool) *config {
+	ncpu_once.Do(func() {
+		if runtime.NumCPU() < 2 {
+			fmt.Printf("warning: only one CPU, which may conceal locking bugs\n")
+		}
+		rand.Seed(makeSeed())
+	})
 	runtime.GOMAXPROCS(4)
 	cfg := &config{}
 	cfg.t = t
-	cfg.net = labrpc.MakeNetwork()		// 构建测试网络
+	cfg.net = labrpc.MakeNetwork()
 	cfg.n = n
 	cfg.applyErr = make([]string, cfg.n)
-	cfg.rafts = make([]*Raft, cfg.n)	//  构建cfg.n个Raft实例
+	cfg.rafts = make([]*Raft, cfg.n)
 	cfg.connected = make([]bool, cfg.n)
 	cfg.saved = make([]*Persister, cfg.n)
 	cfg.endnames = make([][]string, cfg.n)
 	cfg.logs = make([]map[int]int, cfg.n)
+	cfg.start = time.Now()
 
-	cfg.setunreliable(unreliable)	// 设置网络为不可靠网络
+	cfg.setunreliable(unreliable)
 
-	cfg.net.LongDelays(true)	// 存在长延时的网络
+	cfg.net.LongDelays(true)
 
 	// create a full set of Rafts.
-	// 创建raft集合(cfg.n × cfg.n个端点，因为需要互相连接),cfg.n个Raft实例
 	for i := 0; i < cfg.n; i++ {
 		cfg.logs[i] = map[int]int{}
-		cfg.start1(i)	// 构建节点之间的相互连接关系（创建Raft实例）
+		cfg.start1(i)
 	}
 
 	// connect everyone
-	// 连接每一个raft实例
 	for i := 0; i < cfg.n; i++ {
 		cfg.connect(i)
 	}
@@ -117,30 +132,21 @@ func (cfg *config) crash1(i int) {
 // state persister, to isolate previous instance of
 // this server. since we cannot really kill it.
 //
-// 启动或者重新启动一个Raft实例,如果实例已经存在那么我们下“杀死”（译注：应该只是隔离，重新启动一个新的raft实例）。
-// 重新分配一个新的输出端口的文件名(???)和一个新的状态持久化对象，为了隔离之前本机的服务器实例。
-// 因为我们不能杀死它。
 func (cfg *config) start1(i int) {
 	cfg.crash1(i)
 
 	// a fresh set of outgoing ClientEnd names.
 	// so that old crashed instance's ClientEnds can't send.
-	// 一套新鲜的对外ClientEnd名字，所以旧的崩溃实例ClientEnds不能发送。
 	cfg.endnames[i] = make([]string, cfg.n)
 	for j := 0; j < cfg.n; j++ {
-		cfg.endnames[i][j] = randstring(20) // 随机产生的名字,这边产生 cfg.n个名字(需要连接到其他的服务器，创建不同的端点)
+		cfg.endnames[i][j] = randstring(20)
 	}
 
 	// a fresh set of ClientEnds.
-	// 新鲜的ClientEnds集合
 	ends := make([]*labrpc.ClientEnd, cfg.n)
 	for j := 0; j < cfg.n; j++ {
-		ends[j] = cfg.net.MakeEnd(cfg.endnames[i][j]) 	// 创建名为cfg.endnames[i][j]的ClientEnd
-		cfg.net.Connect(cfg.endnames[i][j], j)		// cfg.n个节点连接到j（在这边服务器是0,1,2）
-		// cfg.endnames[i][j]：索引j表示连接到的服务器，索引i为自身
-		// 0 : 0->0 0->1 0->2	00 01 02
-		// 1 : 1->0 1->1 1->2	10 11 12
-		// 2 : 2->0 2->1 2->2	20 21 22
+		ends[j] = cfg.net.MakeEnd(cfg.endnames[i][j])
+		cfg.net.Connect(cfg.endnames[i][j], j)
 	}
 
 	cfg.mu.Lock()
@@ -149,7 +155,6 @@ func (cfg *config) start1(i int) {
 	// new instance's persisted state.
 	// but copy old persister's content so that we always
 	// pass Make() the last persisted state.
-	// 一个新的持久化对象，
 	if cfg.saved[i] != nil {
 		cfg.saved[i] = cfg.saved[i].Copy()
 	} else {
@@ -159,36 +164,30 @@ func (cfg *config) start1(i int) {
 	cfg.mu.Unlock()
 
 	// listen to messages from Raft indicating newly committed messages.
-	// 创建channel处理消息
 	applyCh := make(chan ApplyMsg)
 	go func() {
 		for m := range applyCh {
 			err_msg := ""
-			if m.UseSnapshot {
-				// ignore the snapshot
-				// 忽略快照
+			if m.CommandValid == false {
+				// ignore other types of ApplyMsg
 			} else if v, ok := (m.Command).(int); ok {
 				cfg.mu.Lock()
-				// 日志处理
-
-				// 遍历全部的日志系列
 				for j := 0; j < len(cfg.logs); j++ {
-					if old, oldok := cfg.logs[j][m.Index]; oldok && old != v {
+					if old, oldok := cfg.logs[j][m.CommandIndex]; oldok && old != v {
 						// some server has already committed a different value for this entry!
 						err_msg = fmt.Sprintf("commit index=%v server=%v %v != server=%v %v",
-							m.Index, i, m.Command, j, old)
+							m.CommandIndex, i, m.Command, j, old)
 					}
 				}
-
-				// 添加日志
-				_, prevok := cfg.logs[i][m.Index-1] // map中是否存在key：m.Index-1
-				cfg.logs[i][m.Index] = v
+				_, prevok := cfg.logs[i][m.CommandIndex-1]
+				cfg.logs[i][m.CommandIndex] = v
+				if m.CommandIndex > cfg.maxIndex {
+					cfg.maxIndex = m.CommandIndex
+				}
 				cfg.mu.Unlock()
 
-				// 索引肯定是从开始，排除是一个情况
-				// 如果之前的不存在，那么这台服务上面的日志已经乱序
-				if m.Index > 1 && prevok == false {
-					err_msg = fmt.Sprintf("server %v apply out of order %v", i, m.Index)
+				if m.CommandIndex > 1 && prevok == false {
+					err_msg = fmt.Sprintf("server %v apply out of order %v", i, m.CommandIndex)
 				}
 			} else {
 				err_msg = fmt.Sprintf("committed command %v is not an int", m.Command)
@@ -203,19 +202,23 @@ func (cfg *config) start1(i int) {
 		}
 	}()
 
-	// 创建Raft实例,启动心跳准备超时进行选举
 	rf := Make(ends, i, cfg.saved[i], applyCh)
 
-	// 记录自己的位置
 	cfg.mu.Lock()
 	cfg.rafts[i] = rf
 	cfg.mu.Unlock()
 
-	// 创建提供Raft相关方法的实例，添加到本网络
 	svc := labrpc.MakeService(rf)
 	srv := labrpc.MakeServer()
 	srv.AddService(svc)
 	cfg.net.AddServer(i, srv)
+}
+
+func (cfg *config) checkTimeout() {
+	// enforce a two minute real-time limit on each test
+	if !cfg.t.Failed() && time.Since(cfg.start) > 120*time.Second {
+		cfg.t.Fatal("test took longer than 120 seconds")
+	}
 }
 
 func (cfg *config) cleanup() {
@@ -224,33 +227,25 @@ func (cfg *config) cleanup() {
 			cfg.rafts[i].Kill()
 		}
 	}
-	atomic.StoreInt32(&cfg.done, 1)
+	cfg.net.Cleanup()
+	cfg.checkTimeout()
 }
 
 // attach server i to the net.
-// 使服务器在此网络上线
 func (cfg *config) connect(i int) {
 	// fmt.Printf("connect(%d)\n", i)
 
 	cfg.connected[i] = true
 
-	// func (cfg *config) start1(i int)构建的连接关系
-	// cfg.endnames[i][j]：索引j表示连接到的服务器，索引i为自身
-	// 0 : 0->0 0->1 0->2	00 01 02
-	// 1 : 1->0 1->1 1->2	10 11 12
-	// 2 : 2->0 2->1 2->2	20 21 22
-
 	// outgoing ClientEnds
-	// cfg.endnames[i][j] 是主动连接上来的，所以是outgoing ClientEnds
 	for j := 0; j < cfg.n; j++ {
 		if cfg.connected[j] {
 			endname := cfg.endnames[i][j]
-			cfg.net.Enable(endname, true)	// 使连接到这个服务器的客户端上线
+			cfg.net.Enable(endname, true)
 		}
 	}
 
 	// incoming ClientEnds
-	// cfg.endnames[j][i] 是被动连接， 所以是incoming ClientEnds
 	for j := 0; j < cfg.n; j++ {
 		if cfg.connected[j] {
 			endname := cfg.endnames[j][i]
@@ -286,6 +281,10 @@ func (cfg *config) rpcCount(server int) int {
 	return cfg.net.GetCount(server)
 }
 
+func (cfg *config) rpcTotal() int {
+	return cfg.net.GetTotalCount()
+}
+
 func (cfg *config) setunreliable(unrel bool) {
 	cfg.net.Reliable(!unrel)
 }
@@ -296,32 +295,32 @@ func (cfg *config) setlongreordering(longrel bool) {
 
 // check that there's exactly one leader.
 // try a few times in case re-elections are needed.
-// 检测是否存在领导者， 尝试几次，以便需要重新选举。
 func (cfg *config) checkOneLeader() int {
 	for iters := 0; iters < 10; iters++ {
-		time.Sleep(500 * time.Millisecond)
+		ms := 450 + (rand.Int63() % 100)
+		time.Sleep(time.Duration(ms) * time.Millisecond)
 
-		leaders := make(map[int][]int)	// key:currentTerm, value: 切片类型(Raft实例的索引)
+		leaders := make(map[int][]int)
 		for i := 0; i < cfg.n; i++ {
 			if cfg.connected[i] {
-				if t, leader := cfg.rafts[i].GetState(); leader {
-					leaders[t] = append(leaders[t], i)   // 获取领导者个数
+				if term, leader := cfg.rafts[i].GetState(); leader {
+					leaders[term] = append(leaders[term], i)
 				}
 			}
 		}
 
 		lastTermWithLeader := -1
-		for t, lds := range leaders {
-			if len(lds) > 1 {
-				cfg.t.Fatalf("term %d has %d (>1) leaders", t, len(lds))
+		for term, leaders := range leaders {
+			if len(leaders) > 1 {
+				cfg.t.Fatalf("term %d has %d (>1) leaders", term, len(leaders))
 			}
-			if t > lastTermWithLeader {
-				lastTermWithLeader = t
+			if term > lastTermWithLeader {
+				lastTermWithLeader = term
 			}
 		}
 
 		if len(leaders) != 0 {
-			return leaders[lastTermWithLeader][0]  // 找到领导者，并返回领导者索引
+			return leaders[lastTermWithLeader][0]
 		}
 	}
 	cfg.t.Fatalf("expected one leader, got none")
@@ -420,7 +419,11 @@ func (cfg *config) wait(index int, n int, startTerm int) interface{} {
 // same value, since nCommitted() checks this,
 // as do the threads that read from applyCh.
 // returns index.
-func (cfg *config) one(cmd int, expectedServers int) int {
+// if retry==true, may submit the command multiple
+// times, in case a leader fails just after Start().
+// if retry==false, calls Start() only once, in order
+// to simplify the early Lab 2B tests.
+func (cfg *config) one(cmd int, expectedServers int, retry bool) int {
 	t0 := time.Now()
 	starts := 0
 	for time.Since(t0).Seconds() < 10 {
@@ -458,10 +461,43 @@ func (cfg *config) one(cmd int, expectedServers int) int {
 				}
 				time.Sleep(20 * time.Millisecond)
 			}
+			if retry == false {
+				cfg.t.Fatalf("one(%v) failed to reach agreement", cmd)
+			}
 		} else {
 			time.Sleep(50 * time.Millisecond)
 		}
 	}
 	cfg.t.Fatalf("one(%v) failed to reach agreement", cmd)
 	return -1
+}
+
+// start a Test.
+// print the Test message.
+// e.g. cfg.begin("Test (2B): RPC counts aren't too high")
+func (cfg *config) begin(description string) {
+	fmt.Printf("%s ...\n", description)
+	cfg.t0 = time.Now()
+	cfg.rpcs0 = cfg.rpcTotal()
+	cfg.cmds0 = 0
+	cfg.maxIndex0 = cfg.maxIndex
+}
+
+// end a Test -- the fact that we got here means there
+// was no failure.
+// print the Passed message,
+// and some performance numbers.
+func (cfg *config) end() {
+	cfg.checkTimeout()
+	if cfg.t.Failed() == false {
+		cfg.mu.Lock()
+		t := time.Since(cfg.t0).Seconds()     // real time
+		npeers := cfg.n                       // number of Raft peers
+		nrpc := cfg.rpcTotal() - cfg.rpcs0    // number of RPC sends
+		ncmds := cfg.maxIndex - cfg.maxIndex0 // number of Raft agreements reported
+		cfg.mu.Unlock()
+
+		fmt.Printf("  ... Passed --")
+		fmt.Printf("  %4.1f  %d %4d %4d\n", t, npeers, nrpc, ncmds)
+	}
 }

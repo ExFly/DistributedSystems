@@ -51,30 +51,21 @@ func (js *JunkServer) Handler5(args JunkArgs, reply *JunkReply) {
 	reply.X = "no pointer"
 }
 
-//	add by frank
-//	export GOPATH=/home/frank/workspace/Distributed-Systems/6.824
-//	cd ${GOPATH}/src/labrpc
-//      go test -v
-//      go test -v -run  TestBasic		// 测试单个函数
-
 func TestBasic(t *testing.T) {
 	runtime.GOMAXPROCS(4)
 
-	// 创建网络
 	rn := MakeNetwork()
-	// 创建客户端,并存在于此网络
+	defer rn.Cleanup()
+
 	e := rn.MakeEnd("end1-99")
 
-	// 创建服务，服务提供者是JunkServer
 	js := &JunkServer{}
 	svc := MakeService(js)
 
-	// 创建服务器对象，并添加到此网络
 	rs := MakeServer()
 	rs.AddService(svc)
 	rn.AddServer("server99", rs)
 
-	// 客户端连接到服务器
 	rn.Connect("end1-99", "server99")
 	rn.Enable("end1-99", true)
 
@@ -99,6 +90,7 @@ func TestTypes(t *testing.T) {
 	runtime.GOMAXPROCS(4)
 
 	rn := MakeNetwork()
+	defer rn.Cleanup()
 
 	e := rn.MakeEnd("end1-99")
 
@@ -140,6 +132,7 @@ func TestDisconnect(t *testing.T) {
 	runtime.GOMAXPROCS(4)
 
 	rn := MakeNetwork()
+	defer rn.Cleanup()
 
 	e := rn.MakeEnd("end1-99")
 
@@ -178,6 +171,7 @@ func TestCounts(t *testing.T) {
 	runtime.GOMAXPROCS(4)
 
 	rn := MakeNetwork()
+	defer rn.Cleanup()
 
 	e := rn.MakeEnd("end1-99")
 
@@ -213,6 +207,7 @@ func TestConcurrentMany(t *testing.T) {
 	runtime.GOMAXPROCS(4)
 
 	rn := MakeNetwork()
+	defer rn.Cleanup()
 
 	js := &JunkServer{}
 	svc := MakeService(js)
@@ -270,6 +265,7 @@ func TestUnreliable(t *testing.T) {
 	runtime.GOMAXPROCS(4)
 
 	rn := MakeNetwork()
+	defer rn.Cleanup()
 	rn.Reliable(false)
 
 	js := &JunkServer{}
@@ -322,6 +318,7 @@ func TestConcurrentOne(t *testing.T) {
 	runtime.GOMAXPROCS(4)
 
 	rn := MakeNetwork()
+	defer rn.Cleanup()
 
 	js := &JunkServer{}
 	svc := MakeService(js)
@@ -383,6 +380,7 @@ func TestRegression1(t *testing.T) {
 	runtime.GOMAXPROCS(4)
 
 	rn := MakeNetwork()
+	defer rn.Cleanup()
 
 	js := &JunkServer{}
 	svc := MakeService(js)
@@ -457,6 +455,7 @@ func TestKilled(t *testing.T) {
 	runtime.GOMAXPROCS(4)
 
 	rn := MakeNetwork()
+	defer rn.Cleanup()
 
 	e := rn.MakeEnd("end1-99")
 
@@ -501,6 +500,7 @@ func TestBenchmark(t *testing.T) {
 	runtime.GOMAXPROCS(4)
 
 	rn := MakeNetwork()
+	defer rn.Cleanup()
 
 	e := rn.MakeEnd("end1-99")
 

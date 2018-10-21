@@ -4,7 +4,7 @@ package shardmaster
 import "raft"
 import "labrpc"
 import "sync"
-import "encoding/gob"
+import "labgob"
 
 
 type ShardMaster struct {
@@ -70,7 +70,7 @@ func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister)
 	sm.configs = make([]Config, 1)
 	sm.configs[0].Groups = map[int][]string{}
 
-	gob.Register(Op{})
+	labgob.Register(Op{})
 	sm.applyCh = make(chan raft.ApplyMsg)
 	sm.rf = raft.Make(servers, me, persister, sm.applyCh)
 

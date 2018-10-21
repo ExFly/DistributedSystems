@@ -1,9 +1,9 @@
 # This is the Makefile helping you submit the labs.  
 # Just create 6.824/api.key with your API key in it, 
 # and submit your lab with the following command: 
-#     $ make [lab1|lab2|lab3a|lab3b|lab4a|lab4b|lab5]
+#     $ make [lab1|lab2a|lab2b|lab2c|lab3a|lab3b|lab4a|lab4b]
 
-LABS=" lab1 lab2 lab3a lab3b lab4a lab4b lab5 "
+LABS=" lab1 lab2a lab2b lab2c lab3a lab3b lab4a lab4b "
 
 %:
 	@echo "Preparing $@-handin.tar.gz"
@@ -38,7 +38,11 @@ LABS=" lab1 lab2 lab3a lab3b lab4a lab4b lab5 "
 			mv api.key api.key.fix ; \
 			cat api.key.fix | tr -d '\n' > api.key ; \
 			rm api.key.fix ; \
-			curl -F file=@$@-handin.tar.gz -F "key=<api.key" http://6824.scripts.mit.edu/submit/handin.py/upload; \
+			curl -F file=@$@-handin.tar.gz -F "key=<api.key" \
+			https://6824.scripts.mit.edu/2018/handin.py/upload > /dev/null || { \
+				echo ; \
+				echo "Submit seems to have failed."; \
+				echo "Please upload the tarball manually on the submission website."; } \
 		fi; \
 	else \
 		echo "Bad target $@. Usage: make [$(LABS)]"; \

@@ -101,10 +101,6 @@ func TestBasic(t *testing.T) {
 	check(t, []int{gid1, gid2}, ck)
 	cfa[2] = ck.Query(-1)
 
-	ck.Join(map[int][]string{gid2: []string{"a", "b", "c"}})
-	check(t, []int{gid1, gid2}, ck)
-	cfa[3] = ck.Query(-1)
-
 	cfx := ck.Query(-1)
 	sa1 := cfx.Groups[gid1]
 	if len(sa1) != 3 || sa1[0] != "x" || sa1[1] != "y" || sa1[2] != "z" {
@@ -119,8 +115,7 @@ func TestBasic(t *testing.T) {
 	check(t, []int{gid2}, ck)
 	cfa[4] = ck.Query(-1)
 
-	ck.Leave([]int{gid1})
-	check(t, []int{gid2}, ck)
+	ck.Leave([]int{gid2})
 	cfa[5] = ck.Query(-1)
 
 	fmt.Printf("  ... Passed\n")
@@ -194,12 +189,14 @@ func TestBasic(t *testing.T) {
 	gids := make([]int, npara)
 	ch := make(chan bool)
 	for xi := 0; xi < npara; xi++ {
-		gids[xi] = int(xi + 1)
+		gids[xi] = int((xi * 10) + 100)
 		go func(i int) {
 			defer func() { ch <- true }()
 			var gid int = gids[i]
-			cka[i].Join(map[int][]string{gid + 1000: []string{"a", "b", "c"}})
-			cka[i].Join(map[int][]string{gid: []string{"a", "b", "c"}})
+			var sid1 = fmt.Sprintf("s%da", gid)
+			var sid2 = fmt.Sprintf("s%db", gid)
+			cka[i].Join(map[int][]string{gid + 1000: []string{sid1}})
+			cka[i].Join(map[int][]string{gid: []string{sid2}})
 			cka[i].Leave([]int{gid + 1000})
 		}(xi)
 	}
@@ -214,7 +211,11 @@ func TestBasic(t *testing.T) {
 
 	c1 := ck.Query(-1)
 	for i := 0; i < 5; i++ {
-		ck.Join(map[int][]string{int(npara + 1 + i): []string{"a", "b", "c"}})
+		var gid = int(npara + 1 + i)
+		ck.Join(map[int][]string{gid: []string{
+			fmt.Sprintf("%da", gid),
+			fmt.Sprintf("%db", gid),
+			fmt.Sprintf("%db", gid)}})
 	}
 	c2 := ck.Query(-1)
 	for i := int(1); i <= npara; i++ {
@@ -276,10 +277,6 @@ func TestMulti(t *testing.T) {
 	check(t, []int{gid1, gid2, gid3}, ck)
 	cfa[2] = ck.Query(-1)
 
-	ck.Join(map[int][]string{gid2: []string{"a", "b", "c"}})
-	check(t, []int{gid1, gid2, gid3}, ck)
-	cfa[3] = ck.Query(-1)
-
 	cfx := ck.Query(-1)
 	sa1 := cfx.Groups[gid1]
 	if len(sa1) != 3 || sa1[0] != "x" || sa1[1] != "y" || sa1[2] != "z" {
@@ -296,13 +293,15 @@ func TestMulti(t *testing.T) {
 
 	ck.Leave([]int{gid1, gid3})
 	check(t, []int{gid2}, ck)
-	cfa[4] = ck.Query(-1)
+	cfa[3] = ck.Query(-1)
 
 	cfx = ck.Query(-1)
 	sa2 = cfx.Groups[gid2]
 	if len(sa2) != 3 || sa2[0] != "a" || sa2[1] != "b" || sa2[2] != "c" {
 		t.Fatalf("wrong servers for gid %v: %v\n", gid2, sa2)
 	}
+
+	ck.Leave([]int{gid2})
 
 	fmt.Printf("  ... Passed\n")
 
@@ -317,14 +316,17 @@ func TestMulti(t *testing.T) {
 	var wg sync.WaitGroup
 	for xi := 0; xi < npara; xi++ {
 		wg.Add(1)
-		gids[xi] = int(xi + 1)
+		gids[xi] = int(xi + 1000)
 		go func(i int) {
 			defer wg.Done()
 			var gid int = gids[i]
 			cka[i].Join(map[int][]string{
-				gid:        []string{"a", "b", "c"},
-				gid + 1000: []string{"a", "b", "c"},
-				gid + 2000: []string{"a", "b", "c"},
+				gid: []string{
+					fmt.Sprintf("%da", gid),
+					fmt.Sprintf("%db", gid),
+					fmt.Sprintf("%dc", gid)},
+				gid + 1000: []string{fmt.Sprintf("%da", gid+1000)},
+				gid + 2000: []string{fmt.Sprintf("%da", gid+2000)},
 			})
 			cka[i].Leave([]int{gid + 1000, gid + 2000})
 		}(xi)
@@ -339,7 +341,8 @@ func TestMulti(t *testing.T) {
 	c1 := ck.Query(-1)
 	m := make(map[int][]string)
 	for i := 0; i < 5; i++ {
-		m[npara+1+i] = []string{"a", "b", "c"}
+		var gid = npara + 1 + i
+		m[gid] = []string{fmt.Sprintf("%da", gid), fmt.Sprintf("%db", gid)}
 	}
 	ck.Join(m)
 	c2 := ck.Query(-1)

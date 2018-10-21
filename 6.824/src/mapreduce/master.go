@@ -1,21 +1,25 @@
 package mapreduce
 
+//
+// Please do not modify this file.
+//
+
 import (
 	"fmt"
 	"net"
 	"sync"
 )
 
-// Master holds all the state that the master needs to keep track of. Of
-// particular importance is registerChannel, the channel that notifies the
-// master of workers that have gone idle and are in need of new work.
+// Master holds all the state that the master needs to keep track of.
 type Master struct {
 	sync.Mutex
 
-	address         string
-	registerChannel chan string	// 通知master那些worker处于空闲状态。
-	doneChannel     chan bool
-	workers         []string        // protected by the mutex, master下面含有的worker的名字
+	address     string
+	doneChannel chan bool
+
+	// protected by the mutex
+	newCond *sync.Cond // signals when Register() adds to workers[]
+	workers []string   // each worker's UNIX-domain socket name -- its RPC address
 
 	// Per-task information
 	jobName string   // Name of currently executing job
@@ -29,38 +33,35 @@ type Master struct {
 
 // Register is an RPC method that is called by workers after they have started
 // up to report that they are ready to receive tasks.
-// 一个供worker调用的rpc方法, 告诉master它们已经准备好接受任务。
 func (mr *Master) Register(args *RegisterArgs, _ *struct{}) error {
 	mr.Lock()
 	defer mr.Unlock()
 	debug("Register: worker %s\n", args.Worker)
 	mr.workers = append(mr.workers, args.Worker)
-	go func() {
-		mr.registerChannel <- args.Worker // 通知master那些worker处于空闲状态。
-	}()
+
+	// tell forwardRegistrations() that there's a new workers[] entry.
+	mr.newCond.Broadcast()
+
 	return nil
 }
 
 // newMaster initializes a new Map/Reduce Master
-// 创建初始化master
 func newMaster(master string) (mr *Master) {
 	mr = new(Master)
 	mr.address = master
 	mr.shutdown = make(chan struct{})
-	mr.registerChannel = make(chan string)
+	mr.newCond = sync.NewCond(mr)
 	mr.doneChannel = make(chan bool)
 	return
 }
 
 // Sequential runs map and reduce tasks sequentially, waiting for each task to
-// complete before scheduling the next.
-// Sequential方法顺序的执行map和reduce任务,在分配下一个任务前需要前面的任务完成。
+// complete before running the next.
 func Sequential(jobName string, files []string, nreduce int,
 	mapF func(string, string) []KeyValue,
 	reduceF func(string, []string) string,
 ) (mr *Master) {
 	mr = newMaster("master")
-	// 两个匿名函数
 	go mr.run(jobName, files, nreduce, func(phase jobPhase) {
 		switch phase {
 		case mapPhase:
@@ -69,7 +70,7 @@ func Sequential(jobName string, files []string, nreduce int,
 			}
 		case reducePhase:
 			for i := 0; i < mr.nReduce; i++ {
-				doReduce(mr.jobName, i, len(mr.files), reduceF)
+				doReduce(mr.jobName, i, mergeName(mr.jobName, i), len(mr.files), reduceF)
 			}
 		}
 	}, func() {
@@ -78,15 +79,42 @@ func Sequential(jobName string, files []string, nreduce int,
 	return
 }
 
-// Distributed schedules map and reduce tasks on workers that register with the master over RPC.
-// 将map和reduc任务分布到通过rpc注册到master的worker。
+// helper function that sends information about all existing
+// and newly registered workers to channel ch. schedule()
+// reads ch to learn about workers.
+func (mr *Master) forwardRegistrations(ch chan string) {
+	i := 0
+	for {
+		mr.Lock()
+		if len(mr.workers) > i {
+			// there's a worker that we haven't told schedule() about.
+			w := mr.workers[i]
+			go func() { ch <- w }() // send without holding the lock.
+			i = i + 1
+		} else {
+			// wait for Register() to add an entry to workers[]
+			// in response to an RPC from a new worker.
+			mr.newCond.Wait()
+		}
+		mr.Unlock()
+	}
+}
+
+// Distributed schedules map and reduce tasks on workers that register with the
+// master over RPC.
 func Distributed(jobName string, files []string, nreduce int, master string) (mr *Master) {
 	mr = newMaster(master)
 	mr.startRPCServer()
-	go mr.run(jobName, files, nreduce, mr.schedule, func() {
-		mr.stats = mr.killWorkers()
-		mr.stopRPCServer()
-	})
+	go mr.run(jobName, files, nreduce,
+		func(phase jobPhase) {
+			ch := make(chan string)
+			go mr.forwardRegistrations(ch)
+			schedule(mr.jobName, mr.files, mr.nReduce, phase, ch)
+		},
+		func() {
+			mr.stats = mr.killWorkers()
+			mr.stopRPCServer()
+		})
 	return
 }
 
@@ -101,30 +129,20 @@ func Distributed(jobName string, files []string, nreduce int, master string) (mr
 // statistics are collected, and the master is shut down.
 //
 // Note that this implementation assumes a shared file system.
-
-// 在指定的mapper和reducer数量上面执行mapreduce工作.
-// 首先,在指定数量的mapper上面分配输入文件，然后分配每个任务到可用的worker。每个map任务将它的输出
-// 放置在一些“箱子”, 数量等于给定的reduce任务的数量。一旦全部的mapper工作完成，worker开始安排reduce任务。
-//
-// 当全部的任务完成的时候,reducer的输出被合并,统计被收集，然后master关闭退出。
-//
-// 注意：实现假设在一个共享的文件系统之上。
 func (mr *Master) run(jobName string, files []string, nreduce int,
 	schedule func(phase jobPhase),
 	finish func(),
 ) {
-	mr.jobName = jobName  	// job的名字
-	mr.files = files	// 输入的文件
-	mr.nReduce = nreduce    // reduce任务的数量限制
+	mr.jobName = jobName
+	mr.files = files
+	mr.nReduce = nreduce
 
 	fmt.Printf("%s: Starting Map/Reduce task %s\n", mr.address, mr.jobName)
 
-	// 这两个函数都需要外面传入
-	schedule(mapPhase)	// 安排map任务  schedule即master.go 64行传入的函数
-	schedule(reducePhase)	// 安排reduce任务
-	finish()		// 任务完成
-
-	mr.merge()              // 合并结果
+	schedule(mapPhase)
+	schedule(reducePhase)
+	finish()
+	mr.merge()
 
 	fmt.Printf("%s: Map/Reduce task completed\n", mr.address)
 
@@ -135,7 +153,7 @@ func (mr *Master) run(jobName string, files []string, nreduce int,
 // This happens when all tasks have scheduled and completed, the final output
 // have been computed, and all workers have been shut down.
 func (mr *Master) Wait() {
-	<-mr.doneChannel  // 等待run运行完成
+	<-mr.doneChannel
 }
 
 // killWorkers cleans up all workers by sending each one a Shutdown RPC.
