@@ -81,7 +81,9 @@ func doMap(
 			log.Println(err)
 		}
 		enc := json.NewEncoder(rf)
-		enc.Encode(mapF(inFile, as)[0])
+		for _, v := range mapF(inFile, as) {
+			enc.Encode(v)
+		}
 		rf.Close()
 	}
 }

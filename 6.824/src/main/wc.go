@@ -2,9 +2,18 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"mapreduce"
+	"math/rand"
 	"os"
+	"strconv"
+	"strings"
+	"unicode"
 )
+
+func init() {
+	log.SetFlags(log.Lshortfile | log.LstdFlags)
+}
 
 //
 // The map function is called once for each file of input. The first
@@ -15,6 +24,22 @@ import (
 //
 func mapF(filename string, contents string) []mapreduce.KeyValue {
 	// Your code here (Part II).
+	filter := func(c rune) bool {
+		return !unicode.IsLetter(c)
+	}
+	kv := make(map[string]int)
+	for _, word := range strings.FieldsFunc(contents, filter) {
+		kv[strings.ToLower(word)]++
+	}
+	mrkv := make([]mapreduce.KeyValue, 0)
+	for k, v := range kv {
+		mrkv = append(mrkv, mapreduce.KeyValue{Key: k, Value: strconv.Itoa(v)})
+	}
+	// 0.01 percent display
+	if rand.Intn(10000) == 88 {
+		log.Println(len(mrkv), len(contents), contents, mrkv)
+	}
+	return mrkv
 }
 
 //
@@ -23,7 +48,21 @@ func mapF(filename string, contents string) []mapreduce.KeyValue {
 // any map task.
 //
 func reduceF(key string, values []string) string {
-	// Your code here (Part II).
+	// Your code here (Part II).=
+	count := 0
+	for _, value := range values {
+		i, err := strconv.Atoi(value)
+		if err == nil {
+			count += i
+		} else {
+			log.Println(err)
+		}
+	}
+	// 0.01 percent display
+	if rand.Intn(10000) == 88 {
+		log.Println(key, count, values)
+	}
+	return strconv.Itoa(count)
 }
 
 // Can be run in 3 ways:
