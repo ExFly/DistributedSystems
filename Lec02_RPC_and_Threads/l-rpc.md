@@ -1,6 +1,6 @@
 ##6.824 2016 Lecture 2: 基础设施: RPC和多线程
 
-[原文地址](https://pdos.csail.mit.edu/6.824/notes/l-rpc.txt)
+[原文地址](http://nil.csail.mit.edu/6.824/2018/notes/l-rpc.txt)
 
 ##### 被问的最多的问题？　为什么这么课程选择了Go？
 + 6.824这门课程过去选择使用C++
@@ -18,6 +18,32 @@
 + 我们喜欢使用Go编程
 
 	一门非常容易学习的语言，可以使用教程[effective_go](https://golang.org/doc/effective_go.html)
+
+###### Threads
++ 线程是有用的工具，在go中叫goroutines;其他语言中叫线程。线程可能很棘手
++ 为什么使用线程？
+	+ 他们表现出来的并发行，在分布式系统中很自然的出现
+	+ IO并发行: 在等待接受其他服务的同时，处理请求
+	+ 多核心：线程在多个核心上平行的运行
+
++ Thead = “线程的执行”
+	+ 线程允许一个程序同时运行多件事
+	+ 线程共享内存
+	+ 每一个线程包括自己的线程状态：pc，寄存器，栈
++ 一个程序中友多少线程
+	+ 有时由结构决定：1 thread/client , 一个用于后台任务
+	+ 有时由多核并行决定：一个核心一个活跃线程，go runtime自动调度（schedule）
+	+ 有时期望io并行
+	+ go线程很廉价：100or1000很好，不要过多。goroutines比函数调用消耗资源多
++ 线程的挑战
+	+ 共享数据
+	+ 不同线程协同合作
+	+ 并发的粒度
+
+###### 爬虫 crawler [crawler.go](http://nil.csail.mit.edu/6.824/2018/notes/crawler.go)
++ 什么是爬虫：目的是获得所有的网页
++ 爬虫的挑战：安排io并发，每一个链接拉取一次，知道什么时候结束
++ 
 
 ###### Remote Procedure Call (RPC)
 + 分布式系统的关键部分，全面的实验都使用RPC.
