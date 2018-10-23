@@ -1,15 +1,17 @@
-### 6.824 2014 Lecture 3: GFS案例学习
+### 6.824 2014 Lecture 3: GFS案例
 
 #### 初稿，后面会修改，建议大家看gfs的论文和《大规模分布式存储系统》中的GFS部分
 
 ##### 为什么我们阅读这个论文？
 + Map/reduce使用这种文件系统
-+ 处理存储出错的案例学习
++ 关于课程6.284的全部主题都会在这个论文中出现，性能、容错、一致性
 	+ 用一致性换取简单和性能(trading consistency for simplicity and performance)
 	+ 后续设计的动机(motivation for subsequent designs)
-+ 好的性能 —— 良好的并行I/O性能
 + 好的系统论文 —— 从apps到网络都有细节说明
-+ 关于课程6.284的全部主题都会在这个论文中出现，性能、容错、一致性
+	+ 性能，容错性，一致性
++ 有影响力
+	+ 很多系统使用GFS（例如 Bigtable，Spanner @Google）
+	+ HDFS(hadoop distributed file system) 以GFS为基础
 
 ##### 一致性是什么？
 + 正确性条件
@@ -22,6 +24,8 @@
 + 一般的权衡：
 	+ 强一致性对程序的写操作（application writers）表现不错
 	+ 强一致性将会影响性能
+	+ 弱一致性有很好的性能，很容易扩展到许多服务器
+	+ 弱一致性是很复杂的
 + 更多的正确性条件（通常被称为一致性模型）
 
 ##### 一致性模型的历史
@@ -217,23 +221,6 @@
 	+ 小文件（master服务器的瓶颈）
 	+ 多个客户端并发的向同一份文件更新操作（除了追加）
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+References
+  http://queue.acm.org/detail.cfm?id=1594206  (discussion of gfs evolution)
+  http://highscalability.com/blog/2010/9/11/googles-colossus-makes-search-real-time-by-dumping-mapreduce.html
