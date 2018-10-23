@@ -1,0 +1,246 @@
+2018/10/23 10:15:33 server.go:299: rpc.Register: method "CleanupFiles" has 1 input parameters; needs exactly three
+2018/10/23 10:15:33 server.go:299: rpc.Register: method "Lock" has 1 input parameters; needs exactly three
+2018/10/23 10:15:33 server.go:299: rpc.Register: method "Unlock" has 1 input parameters; needs exactly three
+2018/10/23 10:15:33 server.go:299: rpc.Register: method "Wait" has 1 input parameters; needs exactly three
+/var/tmp/824-501/mr26616-master: Starting Map/Reduce task test
+RunWorker /var/tmp/824-501/mr26616-worker1
+Schedule: 20 mapPhase tasks (10 I/Os)
+2018/10/23 10:15:33 server.go:299: rpc.Register: method "Lock" has 1 input parameters; needs exactly three
+RunWorker /var/tmp/824-501/mr26616-worker0
+2018/10/23 10:15:33 server.go:299: rpc.Register: method "Unlock" has 1 input parameters; needs exactly three
+2018/10/23 10:15:33 server.go:299: rpc.Register: method "Lock" has 1 input parameters; needs exactly three
+2018/10/23 10:15:33 server.go:299: rpc.Register: method "Unlock" has 1 input parameters; needs exactly three
+DEBUG: taskNum:19 n_other:10 phase:mapPhaseDEBUG: taskNum:2 n_other:10 phase:mapPhaseDEBUG: taskNum:3 n_other:10 phase:mapPhaseDEBUG: taskNum:4 n_other:10 phase:mapPhaseDEBUG: taskNum:5 n_other:10 phase:mapPhaseDEBUG: taskNum:6 n_other:10 phase:mapPhaseDEBUG: taskNum:7 n_other:10 phase:mapPhaseDEBUG: taskNum:8 n_other:10 phase:mapPhaseDEBUG: taskNum:9 n_other:10 phase:mapPhaseDEBUG: taskNum:10 n_other:10 phase:mapPhaseDEBUG: taskNum:11 n_other:10 phase:mapPhaseDEBUG: taskNum:12 n_other:10 phase:mapPhaseDEBUG: taskNum:13 n_other:10 phase:mapPhaseDEBUG: taskNum:14 n_other:10 phase:mapPhaseDEBUG: taskNum:15 n_other:10 phase:mapPhaseDEBUG: taskNum:16 n_other:10 phase:mapPhaseDEBUG: taskNum:17 n_other:10 phase:mapPhaseDEBUG: taskNum:18 n_other:10 phase:mapPhaseDEBUG: taskNum:0 n_other:10 phase:mapPhaseDEBUG: taskNum:1 n_other:10 phase:mapPhaseRegister: worker /var/tmp/824-501/mr26616-worker1
+Register: worker /var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #2 on file 824-mrinput-2.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #19 on file 824-mrinput-19.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #19 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #3 on file 824-mrinput-3.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #2 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #4 on file 824-mrinput-4.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #4 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #5 on file 824-mrinput-5.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #3 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #6 on file 824-mrinput-6.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #5 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker0: mapPhase task #6 done
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #7 on file 824-mrinput-7.txt (nios: 10)
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #8 on file 824-mrinput-8.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #7 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #9 on file 824-mrinput-9.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #8 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #10 on file 824-mrinput-10.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #10 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #11 on file 824-mrinput-11.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #9 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #12 on file 824-mrinput-12.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #12 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #13 on file 824-mrinput-13.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #11 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #14 on file 824-mrinput-14.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #14 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #15 on file 824-mrinput-15.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #13 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #16 on file 824-mrinput-16.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #15 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #17 on file 824-mrinput-17.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #16 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #18 on file 824-mrinput-18.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #18 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #0 on file 824-mrinput-0.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #17 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #1 on file 824-mrinput-1.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #0 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker0: mapPhase task #1 done
+current worker:/var/tmp/824-501/mr26616-worker0Schedule: mapPhase done
+Schedule: 10 reducePhase tasks (20 I/Os)
+DEBUG: taskNum:9 n_other:20 phase:reducePhaseDEBUG: taskNum:0 n_other:20 phase:reducePhaseDEBUG: taskNum:1 n_other:20 phase:reducePhaseDEBUG: taskNum:2 n_other:20 phase:reducePhaseDEBUG: taskNum:3 n_other:20 phase:reducePhaseDEBUG: taskNum:4 n_other:20 phase:reducePhaseDEBUG: taskNum:5 n_other:20 phase:reducePhaseDEBUG: taskNum:6 n_other:20 phase:reducePhaseDEBUG: taskNum:7 n_other:20 phase:reducePhaseDEBUG: taskNum:8 n_other:20 phase:reducePhase/var/tmp/824-501/mr26616-worker1: given reducePhase task #0 on file 824-mrinput-0.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker0: given reducePhase task #9 on file 824-mrinput-9.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker0: reducePhase task #9 done
+current worker:/var/tmp/824-501/mr26616-worker0 
+/var/tmp/824-501/mr26616-worker0: given reducePhase task #1 on file 824-mrinput-1.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker1: reducePhase task #0 done
+current worker:/var/tmp/824-501/mr26616-worker1 
+/var/tmp/824-501/mr26616-worker1: given reducePhase task #2 on file 824-mrinput-2.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker0: reducePhase task #1 done
+current worker:/var/tmp/824-501/mr26616-worker0 
+/var/tmp/824-501/mr26616-worker0: given reducePhase task #3 on file 824-mrinput-3.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker1: reducePhase task #2 done
+current worker:/var/tmp/824-501/mr26616-worker1 
+/var/tmp/824-501/mr26616-worker1: given reducePhase task #4 on file 824-mrinput-4.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker0: reducePhase task #3 done
+current worker:/var/tmp/824-501/mr26616-worker0 
+/var/tmp/824-501/mr26616-worker0: given reducePhase task #5 on file 824-mrinput-5.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker1: reducePhase task #4 done
+current worker:/var/tmp/824-501/mr26616-worker1 
+/var/tmp/824-501/mr26616-worker1: given reducePhase task #6 on file 824-mrinput-6.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker0: reducePhase task #5 done
+current worker:/var/tmp/824-501/mr26616-worker0 
+/var/tmp/824-501/mr26616-worker0: given reducePhase task #7 on file 824-mrinput-7.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker1: reducePhase task #6 done
+current worker:/var/tmp/824-501/mr26616-worker1 
+/var/tmp/824-501/mr26616-worker1: given reducePhase task #8 on file 824-mrinput-8.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker0: reducePhase task #7 done
+current worker:/var/tmp/824-501/mr26616-worker0 
+/var/tmp/824-501/mr26616-worker1: reducePhase task #8 done
+current worker:/var/tmp/824-501/mr26616-worker1Schedule: reducePhase done
+Master: shutdown worker /var/tmp/824-501/mr26616-worker1
+Shutdown /var/tmp/824-501/mr26616-worker1
+Master: shutdown worker /var/tmp/824-501/mr26616-worker0
+Shutdown /var/tmp/824-501/mr26616-worker0
+Shutdown: registration server
+RegistrationServer: accept error accept unix /var/tmp/824-501/mr26616-master: use of closed network connectionRegistrationServer: done
+cleanupRegistration: done
+Merge phaseMerge: read mrtmp.test-res-0
+Merge: read mrtmp.test-res-1
+Merge: read mrtmp.test-res-2
+Merge: read mrtmp.test-res-3
+Merge: read mrtmp.test-res-4
+Merge: read mrtmp.test-res-5
+Merge: read mrtmp.test-res-6
+Merge: read mrtmp.test-res-7
+Merge: read mrtmp.test-res-8
+Merge: read mrtmp.test-res-9
+/var/tmp/824-501/mr26616-master: Map/Reduce task completed
+2018/10/23 10:16:00 server.go:299: rpc.Register: method "CleanupFiles" has 1 input parameters; needs exactly three
+2018/10/23 10:16:00 server.go:299: rpc.Register: method "Lock" has 1 input parameters; needs exactly three
+2018/10/23 10:16:00 server.go:299: rpc.Register: method "Unlock" has 1 input parameters; needs exactly three
+2018/10/23 10:16:00 server.go:299: rpc.Register: method "Wait" has 1 input parameters; needs exactly three
+RunWorker /var/tmp/824-501/mr26616-worker1
+2018/10/23 10:16:00 server.go:299: rpc.Register: method "Lock" has 1 input parameters; needs exactly three
+2018/10/23 10:16:00 server.go:299: rpc.Register: method "Unlock" has 1 input parameters; needs exactly three
+/var/tmp/824-501/mr26616-master: Starting Map/Reduce task test
+RunWorker /var/tmp/824-501/mr26616-worker0
+2018/10/23 10:16:00 server.go:299: rpc.Register: method "Lock" has 1 input parameters; needs exactly three
+Schedule: 20 mapPhase tasks (10 I/Os)
+2018/10/23 10:16:00 server.go:299: rpc.Register: method "Unlock" has 1 input parameters; needs exactly three
+DEBUG: taskNum:3 n_other:10 phase:mapPhaseDEBUG: taskNum:19 n_other:10 phase:mapPhaseDEBUG: taskNum:0 n_other:10 phase:mapPhaseDEBUG: taskNum:1 n_other:10 phase:mapPhaseDEBUG: taskNum:2 n_other:10 phase:mapPhaseDEBUG: taskNum:11 n_other:10 phase:mapPhaseDEBUG: taskNum:4 n_other:10 phase:mapPhaseDEBUG: taskNum:5 n_other:10 phase:mapPhaseDEBUG: taskNum:6 n_other:10 phase:mapPhaseDEBUG: taskNum:7 n_other:10 phase:mapPhaseDEBUG: taskNum:8 n_other:10 phase:mapPhaseDEBUG: taskNum:9 n_other:10 phase:mapPhaseDEBUG: taskNum:15 n_other:10 phase:mapPhaseDEBUG: taskNum:10 n_other:10 phase:mapPhaseDEBUG: taskNum:16 n_other:10 phase:mapPhaseDEBUG: taskNum:17 n_other:10 phase:mapPhaseDEBUG: taskNum:18 n_other:10 phase:mapPhaseDEBUG: taskNum:13 n_other:10 phase:mapPhaseDEBUG: taskNum:14 n_other:10 phase:mapPhaseDEBUG: taskNum:12 n_other:10 phase:mapPhaseRegister: worker /var/tmp/824-501/mr26616-worker1
+Register: worker /var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #3 on file 824-mrinput-3.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #19 on file 824-mrinput-19.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #19 done
+current worker:/var/tmp/824-501/mr26616-worker0/var/tmp/824-501/mr26616-worker0: given mapPhase task #0 on file 824-mrinput-0.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #0 done
+current worker:/var/tmp/824-501/mr26616-worker0/var/tmp/824-501/mr26616-worker0: given mapPhase task #1 on file 824-mrinput-1.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #1 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #2 on file 824-mrinput-2.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #3 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #11 on file 824-mrinput-11.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #2 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #4 on file 824-mrinput-4.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #11 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #5 on file 824-mrinput-5.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #4 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #6 on file 824-mrinput-6.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #5 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #7 on file 824-mrinput-7.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #7 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #8 on file 824-mrinput-8.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #6 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #9 on file 824-mrinput-9.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #8 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #15 on file 824-mrinput-15.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #9 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #10 on file 824-mrinput-10.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #10 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #16 on file 824-mrinput-16.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #15 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #17 on file 824-mrinput-17.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #17 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #18 on file 824-mrinput-18.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #16 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #13 on file 824-mrinput-13.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker0: mapPhase task #13 done
+current worker:/var/tmp/824-501/mr26616-worker0
+/var/tmp/824-501/mr26616-worker0: given mapPhase task #14 on file 824-mrinput-14.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #18 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker1: given mapPhase task #12 on file 824-mrinput-12.txt (nios: 10)
+/var/tmp/824-501/mr26616-worker1: mapPhase task #12 done
+current worker:/var/tmp/824-501/mr26616-worker1
+/var/tmp/824-501/mr26616-worker0: mapPhase task #14 done
+current worker:/var/tmp/824-501/mr26616-worker0Schedule: mapPhase done
+Schedule: 10 reducePhase tasks (20 I/Os)
+DEBUG: taskNum:9 n_other:20 phase:reducePhaseDEBUG: taskNum:0 n_other:20 phase:reducePhaseDEBUG: taskNum:1 n_other:20 phase:reducePhaseDEBUG: taskNum:2 n_other:20 phase:reducePhaseDEBUG: taskNum:3 n_other:20 phase:reducePhaseDEBUG: taskNum:4 n_other:20 phase:reducePhaseDEBUG: taskNum:5 n_other:20 phase:reducePhaseDEBUG: taskNum:6 n_other:20 phase:reducePhaseDEBUG: taskNum:7 n_other:20 phase:reducePhaseDEBUG: taskNum:8 n_other:20 phase:reducePhase/var/tmp/824-501/mr26616-worker0: given reducePhase task #9 on file 824-mrinput-9.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker1: given reducePhase task #0 on file 824-mrinput-0.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker1: reducePhase task #0 done
+current worker:/var/tmp/824-501/mr26616-worker1 
+/var/tmp/824-501/mr26616-worker1: given reducePhase task #1 on file 824-mrinput-1.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker0: reducePhase task #9 done
+current worker:/var/tmp/824-501/mr26616-worker0 
+/var/tmp/824-501/mr26616-worker0: given reducePhase task #2 on file 824-mrinput-2.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker1: reducePhase task #1 done
+current worker:/var/tmp/824-501/mr26616-worker1 
+/var/tmp/824-501/mr26616-worker1: given reducePhase task #3 on file 824-mrinput-3.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker0: reducePhase task #2 done
+current worker:/var/tmp/824-501/mr26616-worker0 
+/var/tmp/824-501/mr26616-worker0: given reducePhase task #4 on file 824-mrinput-4.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker1: reducePhase task #3 done
+current worker:/var/tmp/824-501/mr26616-worker1 
+/var/tmp/824-501/mr26616-worker1: given reducePhase task #5 on file 824-mrinput-5.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker0: reducePhase task #4 done
+current worker:/var/tmp/824-501/mr26616-worker0 
+/var/tmp/824-501/mr26616-worker0: given reducePhase task #6 on file 824-mrinput-6.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker1: reducePhase task #5 done
+current worker:/var/tmp/824-501/mr26616-worker1 
+/var/tmp/824-501/mr26616-worker1: given reducePhase task #7 on file 824-mrinput-7.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker0: reducePhase task #6 done
+current worker:/var/tmp/824-501/mr26616-worker0 
+/var/tmp/824-501/mr26616-worker0: given reducePhase task #8 on file 824-mrinput-8.txt (nios: 20)
+/var/tmp/824-501/mr26616-worker1: reducePhase task #7 done
+current worker:/var/tmp/824-501/mr26616-worker1 
+/var/tmp/824-501/mr26616-worker0: reducePhase task #8 done
+current worker:/var/tmp/824-501/mr26616-worker0Schedule: reducePhase done
+Master: shutdown worker /var/tmp/824-501/mr26616-worker1
+Shutdown /var/tmp/824-501/mr26616-worker1
+Master: shutdown worker /var/tmp/824-501/mr26616-worker0
+Shutdown /var/tmp/824-501/mr26616-worker0
+Shutdown: registration server
+RegistrationServer: accept error accept unix /var/tmp/824-501/mr26616-master: use of closed network connectionRegistrationServer: done
+cleanupRegistration: done
+Merge phaseMerge: read mrtmp.test-res-0
+Merge: read mrtmp.test-res-1
+Merge: read mrtmp.test-res-2
+Merge: read mrtmp.test-res-3
+Merge: read mrtmp.test-res-4
+Merge: read mrtmp.test-res-5
+Merge: read mrtmp.test-res-6
+Merge: read mrtmp.test-res-7
+Merge: read mrtmp.test-res-8
+Merge: read mrtmp.test-res-9
+/var/tmp/824-501/mr26616-master: Map/Reduce task completed
+PASS
+ok  	mapreduce	53.909s
