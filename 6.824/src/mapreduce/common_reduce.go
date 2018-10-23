@@ -59,7 +59,6 @@ func doReduce(
 		if err != nil {
 			fmt.Printf("doReduce:%v", err)
 		}
-		defer infile.Close()
 		br := bufio.NewReader(infile)
 		dec := json.NewDecoder(br)
 		var kv KeyValue
@@ -79,5 +78,6 @@ func doReduce(
 		for k, v := range resultMap {
 			enc.Encode(KeyValue{k, reduceF(k, v)})
 		}
+		infile.Close()
 	}
 }
