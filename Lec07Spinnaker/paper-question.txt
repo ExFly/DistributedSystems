@@ -1,0 +1,1 @@
+Please read the paper's Appendices. In Spinnaker a leader to responds to a client request after the leader and one follower have written a log record for the request on persistent storage. Why is this sufficient to guarantee strong consistency even after the leader or the one follower fail?
