@@ -1,0 +1,5 @@
+The parameter server model was developed for running machine-learning algorithms like sparse logistic regression (§ 5.1).
+
+What do you expect the bottleneck – that is, the most loaded – resource (e.g., CPU, memory, network) to be at the workers and at the servers?
+
+What resource utilization would you likely observe if using Spark's logistic regression (see §3.2.1 in the Spark paper) instead of the parameter server for the experiment in §5.1?
